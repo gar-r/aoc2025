@@ -4,6 +4,8 @@ use std::{
     path::Path,
 };
 
+use crate::map2d::Map2d;
+
 pub fn read_input_lines<P>(path: P) -> Result<Vec<String>>
 where
     P: AsRef<Path>,
@@ -31,9 +33,18 @@ where
     Ok(input_str.chars().collect())
 }
 
+pub fn read_input_map2d<P>(path: P) -> Result<Map2d>
+where P: AsRef<Path>
+{
+    let mut map2d = Map2d { data: Vec::new() };
+    let lines = read_input_lines(path)?;
+    lines.iter().for_each(|l| map2d.data.push(l.chars().collect()));
+    Ok(map2d)
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::input::{read_input_chars, read_input_lines, read_input_string};
+    use crate::input::{read_input_chars, read_input_lines, read_input_map2d, read_input_string};
 
     #[test]
     fn test_read_input_lines() {
@@ -59,4 +70,23 @@ mod tests {
         assert_eq!('c', chars[2]);
         assert_eq!('d', chars[3]);
     }
+
+    #[test]
+    fn test_read_input_map2d() {
+        let map2d = read_input_map2d("test_lines.txt").unwrap();
+        assert_eq!(3, map2d.data.len());
+        assert_eq!(3, map2d.data[0].len());
+        assert_eq!(3, map2d.data[1].len());
+        assert_eq!(3, map2d.data[2].len());
+        assert_eq!('f', map2d.data[0][0]);
+        assert_eq!('o', map2d.data[0][1]);
+        assert_eq!('o', map2d.data[0][2]);
+        assert_eq!('b', map2d.data[1][0]);
+        assert_eq!('a', map2d.data[1][1]);
+        assert_eq!('r', map2d.data[1][2]);
+        assert_eq!('b', map2d.data[2][0]);
+        assert_eq!('a', map2d.data[2][1]);
+        assert_eq!('z', map2d.data[2][2]);
+    }
+
 }
