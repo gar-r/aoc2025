@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct Map2d {
     pub data: Vec<Vec<char>>,
 }
@@ -51,7 +52,7 @@ impl Map2d {
 #[cfg(test)]
 mod tests {
     use crate::map2d::Map2d;
-    
+
     #[test]
     fn test_get_set() {
         let map2d = &mut Map2d {
