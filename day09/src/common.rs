@@ -1,18 +1,28 @@
 use std::hash::Hash;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Coord(pub u64, pub u64);
 
-#[derive(Debug, Eq, Clone)]
+#[derive(Debug, Eq, Clone, Copy)]
 pub struct Rect(pub Coord, pub Coord);
 
 impl Rect {
     pub fn area(&self) -> u64 {
-        let c1 = &self.0;
-        let c2 = &self.1;
-        let w = 1 + c1.0.abs_diff(c2.0);
-        let h = 1 + c1.1.abs_diff(c2.1);
-        w * h
+        self.width() * self.height()
+    }
+    pub fn is_inside(&self, coord: &Coord) -> bool {
+        let c1 = self.0;
+        let c2 = self.1;
+        coord.0 > c1.0.min(c2.0)
+            && coord.0 < c1.0.max(c2.0)
+            && coord.1 > c1.1.min(c2.1)
+            && coord.1 < c1.1.max(c2.1)
+    }
+    pub fn width(&self) -> u64 {
+        1 + (&self.0).0.abs_diff((&self.1).0)
+    }
+    pub fn height(&self) -> u64 {
+        1 + (&self.0).1.abs_diff((&self.1).1)
     }
 }
 
@@ -72,5 +82,19 @@ mod tests {
     fn test_rectange_area() {
         let r = Rect(Coord(9, 7), Coord(2, 5));
         assert_eq!(24, r.area())
+    }
+
+    #[test]
+    fn test_rectangle_is_inside() {
+        let r = Rect(Coord(7, 7), Coord(2, 3));
+        assert!(!r.is_inside(&Coord(1, 1)));
+        assert!(!r.is_inside(&Coord(2, 3)));
+        assert!(!r.is_inside(&Coord(2, 4)));
+        assert!(!r.is_inside(&Coord(7, 7)));
+        assert!(!r.is_inside(&Coord(8, 8)));
+
+        assert!(r.is_inside(&Coord(3, 4)));
+        assert!(r.is_inside(&Coord(6, 6)));
+        assert!(r.is_inside(&Coord(5, 5)));
     }
 }
