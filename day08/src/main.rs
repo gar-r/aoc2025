@@ -60,7 +60,7 @@ fn main() {
         }
 
         let d = &distances[box_number];
-        let result = d.c1.x * d.c2.x;   // result is the x coordinates multiplied
+        let result = d.c1.x * d.c2.x; // result is the x coordinates multiplied
         println!("part 2: {}", result);
     }
 }
