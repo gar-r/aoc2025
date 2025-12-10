@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 util = { path = "../util" }
+good_lp = { version = "1.4", features = ["highs"], default-features = false }

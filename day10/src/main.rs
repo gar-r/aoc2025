@@ -11,6 +11,11 @@ fn main() {
         .iter()
         .fold(0, |sum, m| sum + part1::find_min_button_presses(m).unwrap());
     println!("part 1: {}", sum);
+
+    let sum = machines
+        .iter()
+        .fold(0, |sum, m| sum + part2::find_min_button_presses(m));
+    println!("part 2: {}", sum);
 }
 
 #[derive(Debug)]
