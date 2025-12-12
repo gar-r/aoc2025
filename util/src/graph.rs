@@ -60,7 +60,7 @@ where
         removed
     }
 
-    pub fn neightbors(&self, node: &N) -> Option<&HashMap<N, E>> {
+    pub fn neighbors(&self, node: &N) -> Option<&HashMap<N, E>> {
         self.adj.get(node)
     }
 
@@ -102,10 +102,27 @@ mod tests {
     fn test_graph_neighbors() {
         let mut g: Graph<usize, i8> = Graph::new(true);
         g.add_edge(13, 42, 5);
-        let n = g.neightbors(&13);
+        let n = g.neighbors(&13);
         assert!(n.is_some());
         assert_eq!(1, n.unwrap().len());
         assert_eq!(5, *n.unwrap().get(&42).unwrap());
+
+        // no such node
+        let n = g.neighbors(&20);
+        assert!(n.is_none());
+    }
+
+    #[test]
+    fn test_graph_neighbors_undirected() {
+        let mut g: Graph<usize, i8> = Graph::new(false);
+        g.add_edge(10, 15, 1);
+
+        let n = g.neighbors(&10);
+        assert_eq!(1, n.unwrap().len());
+        assert!(n.unwrap().contains_key(&15));
+
+        let n = g.neighbors(&15);
+        assert_eq!(0, n.unwrap().len());
     }
 
     #[test]
@@ -129,5 +146,4 @@ mod tests {
         assert!(g.adj.contains_key(&2));
         assert!(g.adj.contains_key(&3));
     }
-
 }

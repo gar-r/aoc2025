@@ -36,7 +36,7 @@ where
             comp.push(node.clone());
 
             // add neighbors to the stack to visit in the future
-            if let Some(neighbors) = g.neightbors(&node) {
+            if let Some(neighbors) = g.neighbors(&node) {
                 for n in neighbors.keys() {
                     if !visited.contains(n) {
                         stack.push_back(n.clone());
@@ -50,11 +50,44 @@ where
     components
 }
 
+pub fn find_all_paths<N, E>(g: &Graph<N, E>, src: N, dst: N) -> Vec<Vec<N>>
+where
+    N: Eq + Hash + Clone,
+    E: Clone,
+{
+    let mut result = Vec::new();
+
+    // store the current state on the stack (current_node, current_path, current_visited)
+    let mut stack: VecDeque<(N, Vec<N>, HashSet<N>)> = VecDeque::new();
+    stack.push_back((src, Vec::new(), HashSet::new()));
+
+    while let Some((node, path, visited)) = stack.pop_back() {
+        if node == dst {
+            result.push(path);
+            continue;
+        }
+        for n in g.neighbors(&node).unwrap().keys() {
+            if !visited.contains(n) {
+                let mut new_path = path.clone();
+                new_path.push(n.clone());
+                let mut new_visited = visited.clone();
+                new_visited.insert(n.clone());
+                stack.push_back((n.clone(), new_path, new_visited));
+            }
+        }
+    }
+
+    result
+}
+
 #[cfg(test)]
 mod tests {
     use std::{collections::HashSet, fmt::Debug, hash::Hash};
 
-    use crate::{Graph, graph_algo::connected_components};
+    use crate::{
+        Graph,
+        graph_algo::{connected_components, find_all_paths},
+    };
 
     #[test]
     fn test_connected_components() {
@@ -94,5 +127,29 @@ mod tests {
             let actual_nodes: HashSet<N> = c.iter().cloned().collect();
             expected_nodes.eq(&actual_nodes)
         }))
+    }
+
+    fn test_find_all_paths() {
+        let mut g: Graph<char, ()> = Graph::new_directed();
+        g.add_edge('s', 'e', ());
+        g.add_edge('s', 'a', ());
+        g.add_edge('a', 'e', ());
+        g.add_edge('s', 'b', ());
+        g.add_edge('b', 'd', ());
+        g.add_edge('b', 'c', ());
+        g.add_edge('d', 's', ());
+        g.add_edge('d', 'e', ());
+        g.add_edge('c', 'e', ());
+
+        /*
+         * s---->a---->e
+         * s---->b---->d---->e
+         * s---->b---->c---->e
+         */
+        let paths = find_all_paths(&g, 's', 'e');
+        assert_eq!(3, paths.len());
+        assert!(paths.contains(&vec!['s', 'a', 'e']));
+        assert!(paths.contains(&vec!['s', 'b', 'd', 'e']));
+        assert!(paths.contains(&vec!['s', 'b', 'c', 'e']));
     }
 }
